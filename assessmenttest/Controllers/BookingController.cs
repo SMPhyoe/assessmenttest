@@ -1,10 +1,10 @@
 ﻿using assessmenttest.Context;
 using assessmenttest.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace assessmenttest.Controllers
 {
@@ -59,6 +59,21 @@ namespace assessmenttest.Controllers
             apiContext.SaveChanges();
 
             return RedirectToAction("Index");
+        }
+
+        [HttpGet("XCurrency/{cur}", Name = "XCurrency")]
+        public async Task<IActionResult> currencyex(string cur)
+        {
+            currency curr = new currency();
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync("https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/"+ cur + "/sgd.json "))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    curr = JsonConvert.DeserializeObject<currency>(apiResponse);
+                }
+            }
+            return View(curr);
         }
 
 
